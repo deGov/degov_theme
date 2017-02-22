@@ -16,9 +16,9 @@ cdn_provider: ''
 
 # Add degov logo
 logo:
-  path: 'themes/custom/degov/img/logo-degov.png'
+  path: 'themes/contrib/degov_theme/img/logo-degov.png'
   use_default: false
 
 favicon:
-  path: 'themes/custom/degov/img/favicon.ico'
+  path: 'themes/contrib/degov_theme/img/favicon.ico'
   use_default: false
