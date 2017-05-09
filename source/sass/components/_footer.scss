@@ -14,6 +14,7 @@
 .region-page-outro {
   padding-top: $vertical-gutter-width / 2;
   padding-bottom: $vertical-gutter-width / 2;
+  // @TODO replace ids with block classes
   #block-degov-footer,
   #block-degov-account-menu {
     @include larger-than($screen-phone) {
@@ -23,18 +24,16 @@
   }
 }
 
-
-.region-footer,
-.region-page-outro {
-  .menu {
-    margin-left: -15px; // from $nav-link-padding
-    li {
-      display: inline-block;
-      a:hover,
-      a:active,
-      a:focus {
-        text-decoration: underline;
-      }
-    }
+.region-footer .menu,
+.region-page-outro .menu {
+  margin-left: -15px; // from $nav-link-padding
+}
+.region-footer .menu li,
+.region-page-outro .menu li {
+  display: inline-block;
+  a:hover,
+  a:active,
+  a:focus {
+    text-decoration: underline;
   }
 }

@@ -1,5 +1,8 @@
+/* eslint-disable no-unused-vars, lines-around-comment*/
 const Bootstrap = require('bootstrap-sass');
 const Slick = require('slick-carousel');
+/* eslint-enable no-unused-vars, lines-around-comment */
+
 const PhotoSwipe = require('photoswipe');
 const PhotoSwipeUiDefault = require('photoswipe/dist/photoswipe-ui-default');
 
@@ -34,13 +37,11 @@ const PhotoSwipeUiDefault = require('photoswipe/dist/photoswipe-ui-default');
     attach: function (context, settings) {
       $(context).find('#block-languageswitcher .active-lang').once('lang-click').click(function () {
         const isOpen = $(this).hasClass('open');
-        //const isOpen = $(this).siblings('ul').hasClass('open');
         $(this).toggleClass('open', !isOpen);
         $(this).siblings('ul').toggleClass('open', !isOpen);
       });
 
       $(context).find('#block-languageswitcher a').once('lang-link').each(function () {
-        console.info('do it');
         const hrefLang = $(this).attr('hreflang');
         $(this).text(hrefLang);
       });
@@ -50,18 +51,18 @@ const PhotoSwipeUiDefault = require('photoswipe/dist/photoswipe-ui-default');
   // Search
   Drupal.behaviors.navSearch = {
     attach: function (context, settings) {
-      $('.block-search', context).once('nav-search').each(function() {
-        var $container = $(this);
+      $('.block-search', context).once('nav-search').each(function () {
+        const $container = $(this);
 
         // open when clicking on the button the first time
-        $('button', this).click(function () {
+        $container.find('button').click(function () {
           if ($('body', context).hasClass('expanded-search')) {
             return true;
           }
-          $('body', context).addClass('expanded-search');
-          $('input[type="search"]', $container).focus();
+          $(context).find('body').addClass('expanded-search');
+          $container.find('input[type="search"]', $container).focus();
 
-          $(document).on('click.hideSearch', '*', function(e) {
+          $(document).on('click.hideSearch', '*', function (e) {
             if (!$(e.target).closest('.block-search').length) {
               $('body', context).removeClass('expanded-search');
               $(document).off('click.hideSearch');
@@ -76,15 +77,16 @@ const PhotoSwipeUiDefault = require('photoswipe/dist/photoswipe-ui-default');
   // Add body class on scroll
   Drupal.behaviors.scroll = {
     attach: function (context, settings) {
-      $(context).find('body').once('scroll-class').each(function() {
-        var headerOffset = $('.navbar-secondary', context).outerHeight();
+      $(context).find('body').once('scroll-class').each(function () {
+        const headerOffset = $('.navbar-secondary', context).outerHeight();
+        const $body = $(this);
         $(window).scroll(function (event) {
-          var scrollPos = $(window).scrollTop();
-          $(context).find('body').toggleClass('scroll-past-navbar',scrollPos > headerOffset);
-          $(context).find('body').toggleClass('scroll',scrollPos > 0);
+          const scrollPos = $(window).scrollTop();
+          $body.toggleClass('is-scrolling-past-navbar', scrollPos > headerOffset);
+          $body.toggleClass('is-scrolling', scrollPos > 0);
         });
       });
-      $(context).find('.scroll-to-top').click(function() {
+      $(context).find('.scroll-to-top').click(function () {
         $('html, body').animate({
           scrollTop: 0
         }, 500);
@@ -93,32 +95,37 @@ const PhotoSwipeUiDefault = require('photoswipe/dist/photoswipe-ui-default');
   };
 
   Drupal.behaviors.toolBarOffset = {
-    attach: function(context, settings) {
-      $(context).find('#toolbar-administration').each(function() {
+    attach: function (context, settings) {
+      $(context).find('#toolbar-administration').each(function () {
         if ($(window).innerWidth() < 768) {
           return;
         }
-        window.setTimeout(function() {
-          var offset = $('#toolbar-bar').outerHeight() + $('#toolbar-item-administration-tray').outerHeight();
-          var paddingTop = +($('body').css('padding-top').replace('px', ''));
+        window.setTimeout(function () {
+          const offset = $('#toolbar-bar').outerHeight() + $('#toolbar-item-administration-tray').outerHeight();
+          const paddingTop = +($('body').css('padding-top').replace('px', ''));
 
           
           $('.header-wrapper').css('top', offset);
           $('body').attr('style', 'padding-top: ' + (offset + paddingTop) + 'px !important;');
-        },100);
+        }, 100);
       });
     }
   };
 
   Drupal.behaviors.sliderParagraph = {
-    attach: function(context, settings) {
-      $(context).find('.banner-wrapper').once('slider-paragraph-frontpage').each(function() {
-        var $slider = $(this);
-        $slider.slick({arrows: false});
-        $slider.find('.slider-prev').click(function(){
+    attach: function (context, settings) {
+      $(context).find('.banner-wrapper').once('slider-paragraph-frontpage').each(function () {
+        const $slider = $(this);
+        $slider.slick({
+          arrows: false
+        });
+
+        // arrows are within the slide, which is why we need to hook them up to
+        // the slick nav methods
+        $slider.find('.inslide-slider-prev').click(function () {
           $slider.slick('slickPrev');
         });
-        $slider.find('.slider-next').click(function(){
+        $slider.find('.inslide-slider-next').click(function () {
           $slider.slick('slickNext');
         });
       });
@@ -126,29 +133,28 @@ const PhotoSwipeUiDefault = require('photoswipe/dist/photoswipe-ui-default');
   };
 
   Drupal.behaviors.photoswipe = {
-    attach: function(context, settings) {
-      $(context).find('.field--name-field-gallery-element-images').once('photoswipe-processed').each(function() {
-        var modalContainer = document.querySelectorAll('.pswp')[0];
-        var $fields = $(this).find('.field--item');
-        var items = [];
-        $fields.each(function(i) {
-          var $link = $(this).find('a');
-          var $img = $link.find('img');
-          var width = $img.attr('width') * 3;
-          var height = $img.attr('height') * 3;
-          var href= $link.attr('href');
+    attach: function (context, settings) {
+      $(context).find('.field--name-field-gallery-element-images').once('photoswipe-processed').each(function () {
+        const modalContainer = document.querySelectorAll('.pswp')[0];
+        const $fields = $(this).find('.field--item');
+        const items = [];
+        $fields.each(function (i) {
+          const $link = $(this).find('a');
+          const $img = $link.find('img');
+          const width = $img.attr('width') * 3;
+          const height = $img.attr('height') * 3;
+          const href = $link.attr('href');
           items.push({
             w: width,
             h: height,
             src: href
           });
-          $link.click(function(e) {
+          $link.click(function (e) {
 
-            var gallery = new PhotoSwipe(modalContainer, PhotoSwipeUiDefault, items, {
+            const gallery = new PhotoSwipe(modalContainer, PhotoSwipeUiDefault, items, {
               index: i,
-              getThumbBoundsFn: function(index) {
-                var thumbnail = $(context).find('.field--name-field-gallery-element-images .field--item').eq(index).find('img')[0];
-                console.log(thumbnail);
+              getThumbBoundsFn: function (index) {
+                const thumbnail = $(context).find('.field--name-field-gallery-element-images .field--item').eq(index).find('img')[0];
                 const pageYScroll = window.pageYOffset || document.documentElement.scrollTop;
                 const rect = thumbnail.getBoundingClientRect();
                 return {
@@ -165,5 +171,4 @@ const PhotoSwipeUiDefault = require('photoswipe/dist/photoswipe-ui-default');
       });
     }
   };
-
 })(jQuery, window.Drupal);
