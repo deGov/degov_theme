@@ -42,12 +42,15 @@
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
+	/* eslint-disable no-unused-vars, lines-around-comment*/
 	var Bootstrap = __webpack_require__(1);
 	var Slick = __webpack_require__(2);
+	/* eslint-enable no-unused-vars, lines-around-comment */
+
 	var PhotoSwipe = __webpack_require__(4);
 	var PhotoSwipeUiDefault = __webpack_require__(5);
 
@@ -82,13 +85,11 @@
 	    attach: function attach(context, settings) {
 	      $(context).find('#block-languageswitcher .active-lang').once('lang-click').click(function () {
 	        var isOpen = $(this).hasClass('open');
-	        //const isOpen = $(this).siblings('ul').hasClass('open');
 	        $(this).toggleClass('open', !isOpen);
 	        $(this).siblings('ul').toggleClass('open', !isOpen);
 	      });
 
 	      $(context).find('#block-languageswitcher a').once('lang-link').each(function () {
-	        console.info('do it');
 	        var hrefLang = $(this).attr('hreflang');
 	        $(this).text(hrefLang);
 	      });
@@ -102,12 +103,12 @@
 	        var $container = $(this);
 
 	        // open when clicking on the button the first time
-	        $('button', this).click(function () {
+	        $container.find('button').click(function () {
 	          if ($('body', context).hasClass('expanded-search')) {
 	            return true;
 	          }
-	          $('body', context).addClass('expanded-search');
-	          $('input[type="search"]', $container).focus();
+	          $(context).find('body').addClass('expanded-search');
+	          $container.find('input[type="search"]', $container).focus();
 
 	          $(document).on('click.hideSearch', '*', function (e) {
 	            if (!$(e.target).closest('.block-search').length) {
@@ -126,10 +127,11 @@
 	    attach: function attach(context, settings) {
 	      $(context).find('body').once('scroll-class').each(function () {
 	        var headerOffset = $('.navbar-secondary', context).outerHeight();
+	        var $body = $(this);
 	        $(window).scroll(function (event) {
 	          var scrollPos = $(window).scrollTop();
-	          $(context).find('body').toggleClass('scroll-past-navbar', scrollPos > headerOffset);
-	          $(context).find('body').toggleClass('scroll', scrollPos > 0);
+	          $body.toggleClass('is-scrolling-past-navbar', scrollPos > headerOffset);
+	          $body.toggleClass('is-scrolling', scrollPos > 0);
 	        });
 	      });
 	      $(context).find('.scroll-to-top').click(function () {
@@ -161,7 +163,12 @@
 	    attach: function attach(context, settings) {
 	      $(context).find('.banner-wrapper').once('slider-paragraph-frontpage').each(function () {
 	        var $slider = $(this);
-	        $slider.slick({ arrows: false });
+	        $slider.slick({
+	          arrows: false
+	        });
+
+	        // arrows are within the slide, which is why we need to hook them up to
+	        // the slick nav methods
 	        $slider.find('.slider-prev').click(function () {
 	          $slider.slick('slickPrev');
 	        });
@@ -195,7 +202,6 @@
 	              index: i,
 	              getThumbBoundsFn: function getThumbBoundsFn(index) {
 	                var thumbnail = $(context).find('.field--name-field-gallery-element-images .field--item').eq(index).find('img')[0];
-	                console.log(thumbnail);
 	                var pageYScroll = window.pageYOffset || document.documentElement.scrollTop;
 	                var rect = thumbnail.getBoundingClientRect();
 	                return {
@@ -214,9 +220,9 @@
 	  };
 	})(jQuery, window.Drupal);
 
-/***/ },
+/***/ }),
 /* 1 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	/*!
 	 * Bootstrap v3.3.7 (http://getbootstrap.com)
@@ -2597,9 +2603,9 @@
 	}(jQuery);
 
 
-/***/ },
+/***/ }),
 /* 2 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*
 	     _ _      _       _
@@ -5495,19 +5501,19 @@
 	}));
 
 
-/***/ },
+/***/ }),
 /* 3 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	module.exports = jQuery;
 
-/***/ },
+/***/ }),
 /* 4 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*! PhotoSwipe - v4.1.1 - 2015-12-24
+	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*! PhotoSwipe - v4.1.2 - 2017-04-05
 	* http://photoswipe.com
-	* Copyright (c) 2015 Dmitry Semenov; */
+	* Copyright (c) 2017 Dmitry Semenov; */
 	(function (root, factory) { 
 		if (true) {
 			!(__WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.call(exports, __webpack_require__, exports, module)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -5904,6 +5910,8 @@
 		_features,
 		_windowVisibleSize = {},
 		_renderMaxResolution = false,
+		_orientationChangeTimeout,
+
 
 		// Registers PhotoSWipe module (History, Controller ...)
 		_registerModule = function(name, module) {
@@ -6051,13 +6059,13 @@
 				framework.bind(document, 'mousemove', _onFirstMouseMove);
 			}
 
-			framework.bind(window, 'resize scroll', self);
+			framework.bind(window, 'resize scroll orientationchange', self);
 
 			_shout('bindEvents');
 		},
 
 		_unbindEvents = function() {
-			framework.unbind(window, 'resize', self);
+			framework.unbind(window, 'resize scroll orientationchange', self);
 			framework.unbind(window, 'scroll', _globalEventHandlers.scroll);
 			framework.unbind(document, 'keydown', self);
 			framework.unbind(document, 'mousemove', _onFirstMouseMove);
@@ -6069,6 +6077,8 @@
 			if(_isDragging) {
 				framework.unbind(window, _upMoveEvents, self);
 			}
+
+			clearTimeout(_orientationChangeTimeout);
 
 			_shout('unbindEvents');
 		},
@@ -6348,6 +6358,18 @@
 			// Setup global events
 			_globalEventHandlers = {
 				resize: self.updateSize,
+
+				// Fixes: iOS 10.3 resize event
+				// does not update scrollWrap.clientWidth instantly after resize
+				// https://github.com/dimsemenov/PhotoSwipe/issues/1315
+				orientationchange: function() {
+					clearTimeout(_orientationChangeTimeout);
+					_orientationChangeTimeout = setTimeout(function() {
+						if(_viewportSize.x !== self.scrollWrap.clientWidth) {
+							self.updateSize();
+						}
+					}, 500);
+				},
 				scroll: _updatePageScrollOffset,
 				keydown: _onKeyDown,
 				click: _onGlobalClick
@@ -9224,13 +9246,13 @@
 		return PhotoSwipe;
 	});
 
-/***/ },
+/***/ }),
 /* 5 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
-	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*! PhotoSwipe Default UI - 4.1.1 - 2015-12-24
+	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*! PhotoSwipe Default UI - 4.1.2 - 2017-04-05
 	* http://photoswipe.com
-	* Copyright (c) 2015 Dmitry Semenov; */
+	* Copyright (c) 2017 Dmitry Semenov; */
 	/**
 	*
 	* UI on top of main sliding area (caption, arrows, close button, etc.).
@@ -10091,5 +10113,5 @@
 	});
 
 
-/***/ }
+/***/ })
 /******/ ]);
