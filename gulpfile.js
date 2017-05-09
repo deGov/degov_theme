@@ -85,6 +85,7 @@ gulp.task('sass:format', function() {
  */
 gulp.task('sass', function() {
   return gulp.src(['./source/sass/**/*.scss'])
+    .pipe($.sassGlob())
     .pipe($.cached('sassCode'))
     .pipe($.progeny())
     .pipe($.debug({title: 'Compiling SASS file:'}))

@@ -33,6 +33,7 @@
     "gulp-postcss": "^6.1.0",
     "gulp-progeny": "^0.2.1",
     "gulp-sass": "^2.2.0",
+    "gulp-sass-glob": "^1.0.8",
     "gulp-sourcemaps": "^1.6.0",
     "gulp-util": "^3.0.7",
     "jquery": "^2.0.0",
